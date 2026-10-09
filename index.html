@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+</head>
+<body>
+<title>Will You Go Out With Me</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=DM+Sans:wght@400;500;700&display=swap">
+<style>
+/* Layout: one centered "ticket" card that steps through Ask → Activity → Date → Booked. Single deliberate warm theme. */
+:root {
+  --ground: #f7dfe2;
+  --card: #fffaf8;
+  --ink: #2a1418;
+  --muted: #7c5a60;
+  --accent: #d6324a;
+  --accent-ink: #ffffff;
+  --line: #ecc9ce;
+  --chip: #fbeef0;
+  --display: "Bricolage Grotesque", "Arial Black", system-ui, sans-serif;
+  --body: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { min-height: 100%; }
+body {
+  background: var(--ground);
+  background-image: radial-gradient(circle at 1px 1px, var(--line) 1px, transparent 0);
+  background-size: 22px 22px;
+  color: var(--ink);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.5;
+  padding: 0 16px;
+  padding-block: 48px;
+  display: grid;
+  place-items: start center;
+}
+.ticket {
+  width: 100%;
+  max-width: 520px;
+  background: var(--card);
+  border-radius: 20px;
+  box-shadow: 0 1px 0 var(--line), 0 18px 40px -18px rgba(120, 20, 40, .35);
+  position: relative;
+  overflow: hidden;
+}
+.stub {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 24px;
+  border-bottom: 2px dashed var(--line);
+  font-size: 12px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.steps { display: flex; gap: 6px; }
+.steps i { width: 22px; height: 4px; border-radius: 2px; background: var(--line); transition: background .3s; }
+.steps i.on { background: var(--accent); }
+.body { padding: 28px 24px 32px; display: grid; gap: 20px; }
+h1, h2 {
+  font-family: var(--display);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -.02em;
+  margin: 0;
+  text-wrap: balance;
+}
+h1 { font-size: clamp(34px, 8vw, 48px); }
+h2 { font-size: clamp(26px, 6vw, 34px); }
+h1 em, h2 em { font-style: normal; color: var(--accent); }
+p { margin: 0; color: var(--muted); max-width: 60ch; }
+.ask-zone { position: relative; min-height: 150px; }
+.btn {
+  font: 700 17px/1 var(--body);
+  border: 0;
+  border-radius: 999px;
+  padding: 16px 30px;
+  cursor: pointer;
+  transition: transform .15s, background .2s, left .25s, top .25s;
+}
+.btn:focus-visible, .opt:focus-visible, a:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.yes { background: var(--accent); color: var(--accent-ink); }
+.yes:hover { transform: scale(1.04); }
+.no { background: var(--chip); color: var(--muted); position: absolute; }
+.ghost { background: transparent; color: var(--muted); padding: 10px 0; font-size: 14px; }
+.ghost:hover { color: var(--ink); }
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.list { display: grid; gap: 10px; }
+.opt {
+  text-align: left;
+  background: var(--chip);
+  border: 2px solid transparent;
+  border-radius: 14px;
+  padding: 14px 16px;
+  cursor: pointer;
+  font: 500 15px/1.3 var(--body);
+  color: var(--ink);
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  transition: border-color .15s, transform .15s;
+}
+.opt:hover { border-color: var(--accent); transform: translateY(-1px); }
+.opt b { font-family: var(--display); font-size: 18px; font-weight: 800; }
+.opt small { color: var(--muted); font-size: 13px; }
+.opt .ico { font-size: 22px; line-height: 1; }
+.slot { grid-template-columns: auto 1fr; align-items: center; column-gap: 16px; }
+.cal {
+  width: 52px; text-align: center; border-radius: 10px; overflow: hidden;
+  background: var(--card); border: 1px solid var(--line); font-variant-numeric: tabular-nums;
+}
+.cal span { display: block; background: var(--accent); color: var(--accent-ink); font-size: 11px; font-weight: 700; letter-spacing: .1em; padding: 2px 0; }
+.cal strong { display: block; font-family: var(--display); font-size: 22px; padding: 2px 0 4px; }
+.summary {
+  border: 2px dashed var(--line); border-radius: 14px; padding: 16px 18px;
+  display: grid; gap: 8px; font-variant-numeric: tabular-nums;
+}
+.summary div { display: flex; justify-content: space-between; gap: 16px; }
+.summary dt { color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: .1em; }
+.summary dd { margin: 0; font-weight: 700; text-align: right; }
+.actions { display: grid; gap: 10px; }
+a.btn { display: block; text-align: center; text-decoration: none; }
+.secondary { background: var(--chip); color: var(--ink); }
+.note { font-size: 13px; }
+.hint { font-size: 13px; min-height: 1.5em; }
+@keyframes pop { from { transform: scale(.96); opacity: .4; } to { transform: none; opacity: 1; } }
+.body > * { animation: pop .35s ease-out both; }
+@media (prefers-reduced-motion: reduce) { .body > *, .btn, .opt { animation: none; transition: none; } }
+@media (max-width: 480px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+</style>
+
+<main class="ticket">
+  <div class="stub"><span id="stubText">Admit two</span><div class="steps" id="steps"><i></i><i></i><i></i><i></i></div></div>
+  <section class="body" id="app"></section>
+</main>
+
+<script>
+/* ============ EDIT THESE ============ */
+const CONFIG = {
+  herName: "Ward",                // her name
+  myName: "Rashad",                  // your name
+  myEmail: "rashad.james83@gmail.com", // added as a guest so YOU get the calendar invite
+  durationHours: 3,
+  activities: [
+    { ico: "🌮", name: "Tacos at Comiendo Con Memo", note: "We met at your favorite taco spot. Now I get to show you mine", where: "Comiendo Con Memo, Laveen, Phoenix, AZ", opensAt: 17 }, // truck opens at 5pm: evening slots only
+    { ico: "🕹️", name: "Pinball at Tilt Gamez", note: "Prepare to lose", where: "Tilt Gamez, Glendale, AZ" },
+    { ico: "🏎️", name: "Go karts at Andretti",  note: "Try to keep up",  where: "Andretti Indoor Karting & Games, 6263 N 99th Ave, Glendale, AZ" }
+  ],
+  // Local times, 24h clock: "YYYY-MM-DDTHH:MM"
+  slots: ["2026-10-16T14:00", "2026-10-16T19:00", "2026-10-17T14:00", "2026-10-17T19:00", "2026-10-18T14:00", "2026-10-18T19:00"]
+};
+/* ==================================== */
+
+const app = document.getElementById("app");
+const state = { step: 0, activity: null, slot: null };
+const NO_LINES = ["No", "Are you sure?", "Really sure?", "Think again", "Nope, try the other one", "Wrong button"];
+
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]); }
+function parse(s) { const [d, t] = s.split("T"); const [y, m, dd] = d.split("-").map(Number); const [h, mi] = t.split(":").map(Number); return new Date(y, m - 1, dd, h, mi); }
+function pad(n) { return String(n).padStart(2, "0"); }
+function stamp(d) { return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}00`; }
+function isoLocal(d) { return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:00`; }
+const fmtDay = d => d.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" });
+const fmtTime = d => d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+
+function setStep(n, stub) {
+  state.step = n;
+  document.querySelectorAll("#steps i").forEach((el, i) => el.classList.toggle("on", i <= n));
+  document.getElementById("stubText").textContent = stub;
+}
+
+function renderAsk() {
+  setStep(0, "Admit two");
+  let tries = 0;
+  app.innerHTML = `
+    <h1>Hey ${esc(CONFIG.herName)}, will you go on a <em>date</em> with me?</h1>
+    <p>Only one right answer here. No pressure.</p>
+    <div class="ask-zone" id="zone">
+      <button class="btn yes" id="yes">Yes!</button>
+      <button class="btn no" id="no" style="left:130px;top:0">No</button>
+    </div>`;
+  const zone = document.getElementById("zone"), no = document.getElementById("no"), yes = document.getElementById("yes");
+  const dodge = e => {
+    e.preventDefault();
+    tries++;
+    no.textContent = NO_LINES[Math.min(tries, NO_LINES.length - 1)];
+    const maxX = zone.clientWidth - no.offsetWidth, maxY = zone.clientHeight - no.offsetHeight;
+    no.style.left = Math.max(0, Math.random() * maxX) + "px";
+    no.style.top = Math.max(0, Math.random() * maxY) + "px";
+    yes.style.transform = `scale(${Math.min(1 + tries * 0.08, 1.5)})`;
+    yes.style.transformOrigin = "left center";
+  };
+  no.addEventListener("pointerenter", dodge);
+  no.addEventListener("click", dodge);
+  no.addEventListener("focus", dodge);
+  yes.addEventListener("click", renderActivity);
+}
+
+function renderActivity() {
+  setStep(1, "Step 2 · Pick the plan");
+  app.innerHTML = `
+    <h2>Great choice. <em>What sounds fun?</em></h2>
+    <div class="grid">${CONFIG.activities.map((a, i) => `
+      <button class="opt" data-i="${i}"><span class="ico">${a.ico}</span><b>${esc(a.name)}</b><small>${esc(a.note)}</small></button>`).join("")}
+    </div>
+    <button class="btn ghost" id="back">← Back</button>`;
+  app.querySelectorAll(".opt").forEach(b => b.addEventListener("click", () => { state.activity = CONFIG.activities[b.dataset.i]; renderDate(); }));
+  document.getElementById("back").addEventListener("click", renderAsk);
+}
+
+function renderDate() {
+  setStep(2, "Step 3 · Pick a time");
+  app.innerHTML = `
+    <h2>${esc(state.activity.name)} it is. <em>When works?</em></h2>
+    <div class="list">${CONFIG.slots.map((s, i) => { const d = parse(s); if (d.getHours() < (state.activity.opensAt || 0)) return ""; return `
+      <button class="opt slot" data-i="${i}">
+        <span class="cal"><span>${d.toLocaleDateString(undefined, { month: "short" }).toUpperCase()}</span><strong>${d.getDate()}</strong></span>
+        <span><b>${fmtDay(d).split(",")[0]} ${d.getHours() < 17 ? "afternoon" : "evening"}</b><br><small>${fmtTime(d)}</small></span>
+      </button>`; }).join("")}
+    </div>
+    <button class="btn ghost" id="back">← Change the plan</button>`;
+  app.querySelectorAll(".opt").forEach(b => b.addEventListener("click", () => { state.slot = parse(CONFIG.slots[b.dataset.i]); renderDone(); }));
+  document.getElementById("back").addEventListener("click", renderActivity);
+}
+
+function renderDone() {
+  setStep(3, "Booked · See you there");
+  const a = state.activity, start = state.slot, end = new Date(start.getTime() + CONFIG.durationHours * 3600e3);
+  const title = `${a.name} with ${CONFIG.myName} & ${CONFIG.herName}`;
+  const details = `It's a date! ${a.note}.`;
+  const g = new URLSearchParams({ action: "TEMPLATE", text: title, dates: `${stamp(start)}/${stamp(end)}`, details });
+  const o = new URLSearchParams({ path: "/calendar/action/compose", rru: "addevent", subject: title, startdt: isoLocal(start), enddt: isoLocal(end), body: details });
+  if (a.where) { g.set("location", a.where); o.set("location", a.where); }
+  if (CONFIG.myEmail) { g.set("add", CONFIG.myEmail); o.set("to", CONFIG.myEmail); }
+  app.innerHTML = `
+    <h2>It's a <em>date.</em></h2>
+    <dl class="summary">
+      <div><dt>What</dt><dd>${a.ico} ${esc(a.name)}</dd></div>
+      <div><dt>When</dt><dd>${fmtDay(start)}<br>${fmtTime(start)} – ${fmtTime(end)}</dd></div>
+      ${a.where ? `<div><dt>Where</dt><dd>${esc(a.where)}</dd></div>` : ""}
+    </dl>
+    <p>Last step: add it to your calendar and hit <strong>Save</strong>. That sends the invite to ${esc(CONFIG.myName)} too.</p>
+    <div class="actions">
+      <a class="btn yes" target="_blank" rel="noopener" href="https://calendar.google.com/calendar/render?${g}">Add to Google Calendar</a>
+      <a class="btn secondary" target="_blank" rel="noopener" href="https://outlook.live.com/calendar/0/deeplink/compose?${o}">Add to Outlook</a>
+    </div>
+    <p class="note">Using an iPhone calendar? Screenshot this and ${esc(CONFIG.myName)} will send the invite.</p>
+    <button class="btn ghost" id="back">← Pick a different time</button>`;
+  document.getElementById("back").addEventListener("click", renderDate);
+}
+
+renderAsk();
+</script>
+
+</body>
+</html>
